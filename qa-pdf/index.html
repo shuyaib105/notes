@@ -307,6 +307,7 @@
   }
   .qa-a.italic{font-style:italic}
   .qa-q .mk{color:#4f46e5;font-weight:700;margin-right:4px}
+  .qa-q .mk.mk-dot{display:inline-block;transform:scale(1.45);transform-origin:left center;margin-right:6px}
 
   .sec-head{
     background:#d9d9d9;border:.8px solid #3f3f46;text-align:center;
@@ -346,7 +347,7 @@
   .cover-inner.band-mode{justify-content:center;padding:54px 46px}
   .cover-top{
     min-height:18px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;
-    color:#64748b;font-weight:600;line-height:1.6;
+    color:#64748b;font-weight:600;line-height:1.6;white-space:pre-line;
   }
   .cover-top.is-empty{min-height:18px}
   .cover-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:10px 0}
@@ -369,6 +370,7 @@
   .cover-band-group{display:flex;flex-direction:column;align-items:center;width:100%}
   .cover-band-topline{
     font-size:14px;font-weight:700;letter-spacing:.16em;color:#111827;margin-bottom:26px;
+    white-space:pre-line;line-height:1.6;
   }
   .cover-band{
     width:100%;background:#d9d9d9;padding:30px 24px;display:flex;flex-direction:column;
@@ -804,7 +806,7 @@
         </select>
       </label>
       <div class="grid2">
-        <label>উপরের লাইন <span class="label-note">(একদম উপরে, ছোট লেখা)</span><input id="coverTopline" placeholder="সাধারণ জ্ঞান"></label>
+        <label>উপরের লাইন <span class="label-note">(একদম উপরে, ছোট লেখা — ২ লাইন পর্যন্ত)</span><textarea id="coverTopline" rows="2" placeholder="সাধারণ জ্ঞান&#10;দ্বিতীয় লাইন (ঐচ্ছিক)"></textarea></label>
         <label>সাবটাইটেল <span class="label-note">(শিরোনামের ঠিক ওপরে)</span><input id="coverSubtitle" placeholder="বাংলাদেশ বিষয়াবলি"></label>
       </div>
       <label>শিরোনাম <span class="label-note">(কভারের সবচেয়ে বড় লেখা)</span><input id="coverTitle" placeholder="বাংলাদেশ"></label>
@@ -1649,7 +1651,8 @@
     }
     var jc = doc.cover;
     if (isObj(jc)) {
-      put('coverTopline', firstString(getKey(jc, ['topline', 'institution', 'header'])));
+      var tv = getKey(jc, ['topline', 'institution', 'header']);
+      put('coverTopline', Array.isArray(tv) ? tv.map(toText).join('\n') : firstString(tv));
       put('coverTitle', firstString(getKey(jc, ['title', 'name'])));
       put('coverSubtitle', firstString(getKey(jc, ['subtitle', 'topic'])));
       put('coverFooter', firstString(getKey(jc, ['footer'])));
@@ -1961,6 +1964,7 @@
 
       if (part.type === 'q' && part.marker) {
         var mk = el('span', 'mk');
+        if (/^[•·●◦▪▫■□]$/.test(String(part.marker).trim())) mk.classList.add('mk-dot');
         mk.textContent = part.marker;
         n.appendChild(mk);
       }
